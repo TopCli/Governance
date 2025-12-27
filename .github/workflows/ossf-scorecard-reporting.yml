@@ -1,0 +1,37 @@
+name: "OpenSSF Scoring"
+on: 
+  # Scheduled trigger
+  schedule:
+    # Run every Sunday at 00:00
+    - cron: "0 0 * * 0"
+  # Manual trigger
+  workflow_dispatch:
+
+# Permissions required to run this workflow (create issue and commit/push changes)
+permissions:
+  contents: write
+  pull-requests: none 
+  issues: write
+  packages: none
+
+jobs:
+  security-scoring:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+      - name: OpenSSF Scorecard Monitor
+        uses: ossf/scorecard-monitor@a3a9c4cfa0684480ec5f86fa178fc22c4394b69e # v2.0.0-beta8
+        with:
+          scope: reports/ossf_scorecard/scope.json
+          database: reports/ossf_scorecard/database.json
+          report: reports/ossf_scorecard/report.md
+          auto-commit: true
+          auto-push: true
+          generate-issue: true
+          report-tags-enabled: true
+          issue-title: "OpenSSF Scorecard Report Updated!"
+          issue-assignees: 'fraxken'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          max-request-in-parallel: 10
+          discovery-enabled: true
+          discovery-orgs: 'TopCli'
